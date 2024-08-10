@@ -14,4 +14,4 @@ spec:
     spec:
       containers:
         - name: log-output
-          image: jhirvioja/log-output:1.0.1
+          image: jhirvioja/log-output:1.0.7
