@@ -14,4 +14,4 @@ spec:
     spec:
       containers:
         - name: project
-          image: jhirvioja/project:1.0.1
+          image: jhirvioja/project:0.0.3

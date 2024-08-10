@@ -15,7 +15,20 @@ func main() {
 	fmt.Printf("Server started in port %s\n", port)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello world!")
+		w.Header().Set("Content-Type", "text/html")
+		fmt.Fprintf(w, `
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>Hello World</title>
+			</head>
+			<body>
+				<h1>Hello, world!</h1>
+			</body>
+			</html>
+		`)
 	})
 
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
