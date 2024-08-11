@@ -1,4 +1,4 @@
-module github.com/jhirvioja/dwk24/log-output
+module github.com/jhirvioja/dwk24/log-output/log-outputter
 
 go 1.22.0
 

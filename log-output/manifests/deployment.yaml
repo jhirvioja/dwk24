@@ -12,6 +12,16 @@ spec:
       labels:
         app: log-output
     spec:
+      volumes:
+        - name: shared-log-output
       containers:
-        - name: log-output
-          image: jhirvioja/log-output:1.0.7
+        - name: log-outputter
+          image: jhirvioja/log-outputter:0.0.1
+          volumeMounts:
+            - name: shared-log-output
+              mountPath: /usr/src/app/files
+        - name: log-generator
+          image: jhirvioja/log-generator:0.0.1
+          volumeMounts:
+            - name: shared-log-output
+              mountPath: /usr/src/app/files

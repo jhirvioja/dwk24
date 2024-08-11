@@ -10,13 +10,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: log-output-svc
+                name: log-outputter-svc
                 port:
                   number: 2345
-          - path: /pingpong
-            pathType: Prefix
-            backend:
-              service:
-                name: ping-pong-svc
-                port:
-                  number: 5678
