@@ -71,15 +71,67 @@ func main() {
 		fmt.Fprintf(w, `
 			<!DOCTYPE html>
 			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<title>Hello World</title>
-			</head>
-			<body>
-				<h1>Hello, world!</h1>
-				<img src="/files/picsum_image.jpg" alt="Lorem Picsum Random Image">
-			</body>
+				<head>
+					<meta charset="UTF-8" />
+					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+					<title>DwK Project</title>
+					<script
+						defer
+						src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+					></script>
+					<script src="https://cdn.tailwindcss.com"></script>
+				</head>
+				<body>
+					<div class="flex flex-col items-center">
+						<div class="flex flex-col items-center p-8">
+							<h1 class="text-3xl font-bold underline">DwK Project</h1>
+							<div class="m-4 border-2 rounded-lg">
+								<img
+									class="p-8 max-w-full"
+									src="/files/picsum_image.jpg"
+									alt="Lorem Picsum Random Image"
+								/>
+							</div>
+							<div
+								x-data="{
+									todos: [
+										{ id: 1, text: 'Yksi' },
+										{ id: 2, text: 'Kaksi' }
+									],
+									newTodo: '',
+									nextId: 3,
+									addTodo() {
+										if (this.newTodo.trim() !== '') {
+											this.todos.push({ id: this.nextId++, text: this.newTodo.trim() });
+											this.newTodo = '';
+										}
+									}
+								}"
+								class="flex flex-col p-4 border-2 rounded-lg w-80"
+							>
+								<h2 class="mb-4 text-2xl font-bold">Todos</h2>
+								<div class="m-2 flex flex-col">
+									<label for="todoinput">Syötä todo:</label>
+									<input
+										id="todoinput"
+										class="mt-2 rounded-md border-2"
+										maxlength="140"
+										x-model="newTodo"
+										@keydown.enter="addTodo"
+									/>
+									<button class="rounded-md border-2 mt-2 max-w-40" @click="addTodo">
+										Lisää todo
+									</button>
+								</div>
+								<ul class="mt-2 pl-8 list-disc">
+									<template x-for="todo in todos" :key="todo.id">
+										<li x-text="todo.text"></li>
+									</template>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</body>
 			</html>
 		`)
 	})

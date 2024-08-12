@@ -20,7 +20,7 @@ spec:
             claimName: dwk-pv-claim
       containers:
         - name: project
-          image: jhirvioja/project:0.0.6
+          image: jhirvioja/project:0.0.7
           volumeMounts:
             - name: shared-log-output
               mountPath: /usr/src/app/files
