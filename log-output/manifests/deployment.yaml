@@ -14,18 +14,18 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
-      volumes:
-        - name: shared-log-output
-          persistentVolumeClaim:
-            claimName: dwk-pv-claim
+      # volumes:
+      #   - name: shared-log-output
+      #     persistentVolumeClaim:
+      #       claimName: dwk-pv-claim
       containers:
         - name: log-outputter
-          image: jhirvioja/log-outputter:0.0.5
-          volumeMounts:
-            - name: shared-log-output
-              mountPath: /usr/src/app/files
-        - name: log-generator
-          image: jhirvioja/log-generator:0.0.5
-          volumeMounts:
-            - name: shared-log-output
-              mountPath: /usr/src/app/files
+          image: jhirvioja/log-outputter:0.0.6
+          # volumeMounts:
+          #   - name: shared-log-output
+          #     mountPath: /usr/src/app/files
+        # - name: log-generator
+        #   image: jhirvioja/log-generator:0.0.5
+        # volumeMounts:
+        #   - name: shared-log-output
+        #     mountPath: /usr/src/app/files
