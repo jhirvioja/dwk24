@@ -5,16 +5,16 @@ WORKDIR /app
 COPY go.mod ./
 RUN go mod download
 
-COPY *.go ./
+COPY . ./
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /project
+RUN CGO_ENABLED=0 GOOS=linux go build -o /todo-frontend
 
 FROM gcr.io/distroless/base-debian11 AS build-release-stage
 
 WORKDIR /
 
-COPY --from=build-stage /project /project
+COPY --from=build-stage /todo-frontend /todo-frontend
 
 USER nonroot:nonroot
 
-ENTRYPOINT ["/project"]
+ENTRYPOINT ["/todo-frontend"]

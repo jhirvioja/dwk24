@@ -7,6 +7,11 @@ spec:
   selector:
     app: project
   ports:
-    - port: 2345
+    - name: port1
+      port: 2345
       protocol: TCP
       targetPort: 3000
+    - name: port2
+      port: 5678
+      protocol: TCP
+      targetPort: 3001
