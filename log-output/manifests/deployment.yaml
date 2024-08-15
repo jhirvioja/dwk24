@@ -21,10 +21,27 @@ spec:
       #       claimName: dwk-pv-claim
       containers:
         - name: log-outputter
-          image: jhirvioja/log-outputter:0.0.6
+          image: jhirvioja/log-outputter:0.0.9
+          env:
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: log-output-config
+                  key: MESSAGE
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
           # volumeMounts:
           #   - name: shared-log-output
           #     mountPath: /usr/src/app/files
+      volumes:
+        - name: config-volume
+          configMap:
+            name: log-output-config
+            items:
+              - key: information.txt
+                path: information.txt
         # - name: log-generator
         #   image: jhirvioja/log-generator:0.0.5
         # volumeMounts:

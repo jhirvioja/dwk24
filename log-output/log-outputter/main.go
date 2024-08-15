@@ -16,6 +16,20 @@ func main() {
 		port = "3000"
 	}
 
+	fileContent, err := os.ReadFile("/etc/config/information.txt")
+	if err != nil {
+		fmt.Printf("Failed to read file: %v\n", err)
+		os.Exit(1)
+	}
+
+	message := os.Getenv("MESSAGE")
+	if message == "" {
+		message = "MESSAGE is not set"
+	}
+
+	fmt.Printf("file content: %s", string(fileContent))
+	fmt.Printf("env variable: MESSAGE=%s\n", message)
+
 	fmt.Printf("Server started on port %s\n", port)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
