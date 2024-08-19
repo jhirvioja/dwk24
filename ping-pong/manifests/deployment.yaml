@@ -15,13 +15,9 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
-      # volumes:
-      #   - name: shared-log-output
-      #     persistentVolumeClaim:
-      #       claimName: dwk-pv-claim
       containers:
         - name: ping-pong
-          image: jhirvioja/ping-pong:0.0.7
-          # volumeMounts:
-          #   - name: shared-log-output
-          #     mountPath: /usr/src/app/files
+          image: jhirvioja/ping-pong:0.0.9
+          env:
+            - name: "DATABASE_URL"
+              value: "postgres://admin:adminpassword@psql-svc:5432/logoutput?sslmode=disable"
