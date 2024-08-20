@@ -1,11 +1,14 @@
 package main
 
 import (
-	"encoding/json"
+	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
-	"sync"
+
+	"github.com/jhirvioja/dwk24/project/todo-backend/handlers"
+	_ "github.com/lib/pq"
 )
 
 type Todo struct {
@@ -13,11 +16,7 @@ type Todo struct {
 	Todo string `json:"todo"`
 }
 
-var (
-	todos    []Todo
-	nextID   = 1
-	todoLock sync.Mutex
-)
+var db *sql.DB
 
 func main() {
 	port := os.Getenv("PORT")
@@ -25,11 +24,47 @@ func main() {
 		port = "3001"
 	}
 
-	todos = append(todos, Todo{ID: nextID, Todo: "Sample todo"})
-	nextID++
+	dbUsername := os.Getenv("DB_USERNAME")
+	if dbUsername == "" {
+		log.Fatal("DB_USERNAME environment variable not set")
+	}
 
-	http.HandleFunc("/todos", getTodosHandler)
-	http.HandleFunc("/todos/create", createTodoHandler)
+	dbPassword := os.Getenv("DB_PASSWORD")
+	if dbPassword == "" {
+		log.Fatal("DB_PASSWORD environment variable not set")
+	}
+
+	dbDatabase := os.Getenv("DB_DATABASE")
+	if dbDatabase == "" {
+		log.Fatal("DB_DATABASE environment variable not set")
+	}
+
+	dbURL, err := createConnectionString(dbUsername, dbPassword, dbDatabase)
+	if err != nil {
+		log.Fatalf("Error creating PostgreSQL URL: %v", err)
+	}
+
+	db, err = sql.Open("postgres", string(dbURL))
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
+
+	_, err = db.Exec(`
+	Create TABLE IF NOT exists todos (
+			id SERIAL PRIMARY KEY,
+			todo TEXT NOT NULL
+	);
+  `)
+	if err != nil {
+		log.Fatal("Failed to create or initialize todos table:", err)
+	}
+
+	http.HandleFunc("/todos", func(w http.ResponseWriter, r *http.Request) {
+		handlers.GetTodosHandler(w, r, db)
+	})
+	http.HandleFunc("/todos/create", func(w http.ResponseWriter, r *http.Request) {
+		handlers.CreateTodoHandler(w, r, db)
+	})
 
 	fmt.Printf("Server started on port %s\n", port)
 
@@ -38,42 +73,7 @@ func main() {
 	}
 }
 
-func getTodosHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		todoLock.Lock()
-		defer todoLock.Unlock()
-
-		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(todos); err != nil {
-			http.Error(w, "Failed to encode todos", http.StatusInternalServerError)
-		}
-		return
-	}
-
-	http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-}
-
-func createTodoHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		var newTodo Todo
-		if err := json.NewDecoder(r.Body).Decode(&newTodo); err != nil {
-			http.Error(w, "Failed to decode request body", http.StatusBadRequest)
-			return
-		}
-
-		todoLock.Lock()
-		defer todoLock.Unlock()
-
-		newTodo.ID = nextID
-		nextID++
-		todos = append(todos, newTodo)
-
-		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(newTodo); err != nil {
-			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
-		}
-		return
-	}
-
-	http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+func createConnectionString(username, password, database string) (string, error) {
+	postgresURL := fmt.Sprintf("postgres://%s:%s@psql-svc:5432/%s?sslmode=disable", username, password, database)
+	return postgresURL, nil
 }
