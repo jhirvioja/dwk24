@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -11,11 +12,21 @@ type Todo struct {
 	Todo string `json:"todo"`
 }
 
+const maxTodoLength = 140
+
 func CreateTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if r.Method == http.MethodPost {
 		var newTodo Todo
 		if err := json.NewDecoder(r.Body).Decode(&newTodo); err != nil {
 			http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+			return
+		}
+
+		log.Printf("Received todo: %s", newTodo.Todo)
+
+		if len(newTodo.Todo) > maxTodoLength {
+			http.Error(w, "Todo exceeds 140 characters", http.StatusBadRequest)
+			log.Printf("Todo exceeds 140 characters: %s", newTodo.Todo)
 			return
 		}
 
@@ -29,6 +40,8 @@ func CreateTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		if err := json.NewEncoder(w).Encode(newTodo); err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		}
+
+		log.Printf("Todo created succesfully: %s", newTodo.Todo)
 		return
 	}
 

@@ -26,7 +26,7 @@ spec:
             - name: shared-log-output
               mountPath: /usr/src/app/files
         - name: project-todo-backend
-          image: jhirvioja/project-todo-backend:0.0.6
+          image: jhirvioja/project-todo-backend:0.0.7
           env:
             - name: DB_USERNAME
               valueFrom:
