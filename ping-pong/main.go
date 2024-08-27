@@ -20,12 +20,26 @@ func main() {
 		port = "3002"
 	}
 
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		log.Fatal("DATABASE_URL environment variable not set")
+	dbUsername := os.Getenv("DB_USERNAME")
+	if dbUsername == "" {
+		log.Fatal("DB_USERNAME environment variable not set")
 	}
 
-	var err error
+	dbPassword := os.Getenv("DB_PASSWORD")
+	if dbPassword == "" {
+		log.Fatal("DB_PASSWORD environment variable not set")
+	}
+
+	dbDatabase := os.Getenv("DB_DATABASE")
+	if dbDatabase == "" {
+		log.Fatal("DB_DATABASE environment variable not set")
+	}
+
+	dbURL, err := createConnectionString(dbUsername, dbPassword, dbDatabase)
+	if err != nil {
+		log.Fatalf("Error creating PostgreSQL URL: %v", err)
+	}
+
 	db, err = sql.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
@@ -69,4 +83,9 @@ func pongHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to update counter in database", http.StatusInternalServerError)
 		return
 	}
+}
+
+func createConnectionString(username, password, database string) (string, error) {
+	postgresURL := fmt.Sprintf("postgres://%s:%s@psql-svc:5432/%s?sslmode=disable", username, password, database)
+	return postgresURL, nil
 }

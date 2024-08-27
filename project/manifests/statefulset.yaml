@@ -21,12 +21,21 @@ spec:
             - name: psql
               containerPort: 5432
           env:
-            - name: POSTGRES_DB
-              value: "todoproject"
             - name: POSTGRES_USER
-              value: "admin"
-            - name: "POSTGRES_PASSWORD"
-              value: "adminpassword"
+              valueFrom:
+                secretKeyRef:
+                  name: db-username
+                  key: DB_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-password
+                  key: DB_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: db-database
+                  key: DB_DATABASE
           volumeMounts:
             - name: psql-data-storage
               mountPath: /var/lib/postgresql/data
