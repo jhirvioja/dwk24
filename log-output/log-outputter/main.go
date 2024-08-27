@@ -33,7 +33,7 @@ func main() {
 	fmt.Printf("Server started on port %s\n", port)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		resp, err := http.Get("http://ping-pong-svc:5678")
+		resp, err := http.Get("http://ping-pong-svc:80")
 		if err != nil {
 			fmt.Printf("Failed to fetch counter from ping-pong-svc: %v\n", err)
 			http.Error(w, "Failed to fetch counter", http.StatusInternalServerError)
