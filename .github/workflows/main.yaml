@@ -61,6 +61,15 @@ jobs:
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2.1.0
 
+      - name: Create Kubernetes Secrets
+        run: |-
+          kubectl create secret generic todo-secrets \
+            --from-literal=DB_USERNAME=${{ secrets.DB_USERNAME }} \
+            --from-literal=DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            --from-literal=DB_DATABASE=${{ secrets.DB_DATABASE }} \
+            --namespace=todo-project \
+            --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Deploy
         working-directory: project
         run: |-
