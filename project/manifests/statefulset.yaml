@@ -24,17 +24,17 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: db-username
+                  name: todo-secrets
                   key: DB_USERNAME
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: db-password
+                  name: todo-secrets
                   key: DB_PASSWORD
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: db-database
+                  name: todo-secrets
                   key: DB_DATABASE
           volumeMounts:
             - name: psql-data-storage
