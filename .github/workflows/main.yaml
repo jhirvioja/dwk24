@@ -76,5 +76,5 @@ jobs:
           kustomize edit set image PROJECT/FE-IMAGE=gcr.io/$PROJECT_ID/$IMAGE-frontend:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/BE-IMAGE=gcr.io/$PROJECT_ID/$IMAGE-backend:$BRANCH-$GITHUB_SHA
           kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment $SERVICE
+          kubectl rollout status deployment $SERVICE --namespace $IMAGE
           kubectl get services -o wide
