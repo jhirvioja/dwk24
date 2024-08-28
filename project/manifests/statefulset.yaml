@@ -39,12 +39,12 @@ spec:
           volumeMounts:
             - name: psql-data-storage
               mountPath: /var/lib/postgresql/data
+              subPath: postgres
   volumeClaimTemplates:
     - metadata:
         name: psql-data-storage
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: local-path
         resources:
           requests:
             storage: 100Mi

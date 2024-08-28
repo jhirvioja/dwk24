@@ -1,0 +1,70 @@
+name: Release todo-project application to GKE
+
+on:
+  push:
+    paths:
+      - "project/**"
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: dwk-cluster
+  GKE_ZONE: europe-north1-c
+  IMAGE: todo-project
+  SERVICE: todo-project
+  BRANCH: ${{ github.ref_name }}
+
+jobs:
+  build-publish-deploy:
+    name: Build, Publish and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Get credentials from secrets"
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: "${{ secrets.GKE_SA_KEY }}"
+
+      - name: "Set up Cloud SDK"
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: "Use gcloud CLI"
+        run: gcloud info
+
+      - name: "Config docker"
+        run: gcloud --quiet auth configure-docker
+
+      - name: "Get GKE credentials"
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: "${{ env.GKE_CLUSTER }}"
+          project_id: "${{ env.PROJECT_ID }}"
+          location: "${{ env.GKE_ZONE }}"
+
+      - name: Build Backend
+        working-directory: project/todo-backend
+        run: docker build --tag "gcr.io/$PROJECT_ID/$IMAGE-backend:$BRANCH-$GITHUB_SHA" .
+
+      - name: Publish Backend
+        run: docker push "gcr.io/$PROJECT_ID/$IMAGE-backend:$BRANCH-$GITHUB_SHA"
+
+      - name: Build Frontend
+        working-directory: project/todo-frontend
+        run: docker build --tag "gcr.io/$PROJECT_ID/$IMAGE-frontend:$BRANCH-$GITHUB_SHA" .
+
+      - name: Publish Frontend
+        run: docker push "gcr.io/$PROJECT_ID/$IMAGE-frontend:$BRANCH-$GITHUB_SHA"
+
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@v2.1
+
+      - name: Deploy
+        run: |-
+          kustomize edit set image PROJECT/FE-IMAGE=gcr.io/$PROJECT_ID/$IMAGE-frontend:$BRANCH-$GITHUB_SHA
+          kustomize edit set image PROJECT/BE-IMAGE=gcr.io/$PROJECT_ID/$IMAGE-backend:$BRANCH-$GITHUB_SHA
+          kustomize build . | kubectl apply -f -
+          kubectl rollout status deployment $SERVICE
+          kubectl get services -o wide

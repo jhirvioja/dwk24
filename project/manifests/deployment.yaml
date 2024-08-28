@@ -21,12 +21,12 @@ spec:
             claimName: dwk-pv-claim
       containers:
         - name: project
-          image: jhirvioja/project-todo-frontend:0.0.8
+          image: PROJECT/FE-IMAGE
           volumeMounts:
             - name: shared-log-output
               mountPath: /usr/src/app/files
         - name: project-todo-backend
-          image: jhirvioja/project-todo-backend:0.0.7
+          image: PROJECT/BE-IMAGE
           env:
             - name: DB_USERNAME
               valueFrom:
