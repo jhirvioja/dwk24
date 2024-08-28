@@ -44,7 +44,7 @@ spec:
     - metadata:
         name: psql-data-storage
       spec:
-        accessModes: ["ReadOnlyMany"]
+        accessModes: ["ReadWriteOnce"]
         resources:
           requests:
             storage: 100Mi
