@@ -13,7 +13,7 @@ env:
   IMAGE: todo-project
   SERVICE: project
   BRANCH: ${{ github.ref_name }}
-  NAMESPACE: ${{ github.ref_name != 'main' && github.ref_name || "default" }}
+  NAMESPACE: ${{ github.ref_name != 'main' && github.ref_name || default }}
 
 jobs:
   build-publish-deploy:
