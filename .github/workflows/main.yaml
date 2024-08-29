@@ -13,7 +13,6 @@ env:
   IMAGE: todo-project
   SERVICE: project
   BRANCH: ${{ github.ref_name }}
-  NAMESPACE: ${{ github.ref_name != 'main' && github.ref_name || default }}
 
 jobs:
   build-publish-deploy:
@@ -44,6 +43,14 @@ jobs:
           cluster_name: "${{ env.GKE_CLUSTER }}"
           project_id: "${{ env.PROJECT_ID }}"
           location: "${{ env.GKE_ZONE }}"
+
+      - name: Set NAMESPACE if in non-main branch
+        if: ${{ github.ref_name != 'main' }}
+        run: echo "NAMESPACE=${{ github.ref_name }}" >> $GITHUB_ENV
+
+      - name: Set NAMESPACE if main branch
+        if: ${{ github.ref_name == 'main' }}
+        run: echo "NAMESPACE=default" >> $GITHUB_ENV
 
       - name: Build Backend
         working-directory: project/todo-backend
