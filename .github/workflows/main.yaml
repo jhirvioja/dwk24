@@ -13,6 +13,8 @@ env:
   IMAGE: todo-project
   SERVICE: project
   BRANCH: ${{ github.ref_name }}
+  DEFAULT_NAMESPACE: "default"
+  NAMESPACE: ${{ github.ref_name != 'main' && github.ref_name || env.DEFAULT_NAMESPACE }}
 
 jobs:
   build-publish-deploy:
@@ -63,18 +65,20 @@ jobs:
 
       - name: Create Kubernetes Secrets
         run: |-
+          kubectl create namespace $NAMESPACE || true
+          kubectl config set-context --current --namespace=$NAMESPACE
           kubectl create secret generic todo-secrets \
             --from-literal=DB_USERNAME=${{ secrets.DB_USERNAME }} \
             --from-literal=DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             --from-literal=DB_DATABASE=${{ secrets.DB_DATABASE }} \
-            --namespace=todo-project \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Deploy
         working-directory: project
         run: |-
+          kustomize edit set namespace $NAMESPACE
           kustomize edit set image PROJECT/FE-IMAGE=gcr.io/$PROJECT_ID/$IMAGE-frontend:$BRANCH-$GITHUB_SHA
           kustomize edit set image PROJECT/BE-IMAGE=gcr.io/$PROJECT_ID/$IMAGE-backend:$BRANCH-$GITHUB_SHA
           kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment $SERVICE --namespace $IMAGE
+          kubectl rollout status deployment $SERVICE --namespace $NAMESPACE
           kubectl get services -o wide
