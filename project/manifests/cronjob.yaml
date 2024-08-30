@@ -28,3 +28,39 @@ spec:
                       name: todo-secrets
                       key: DB_DATABASE
           restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+spec:
+  schedule: "0 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: postgres-backup
+              image: jhirvioja/pgdump-to-storage:0.0.1
+              env:
+                - name: DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: todo-secrets
+                      key: DB_USERNAME
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: todo-secrets
+                      key: DB_PASSWORD
+                - name: DB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: todo-secrets
+                      key: DB_DATABASE
+                - name: GCS_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: todo-secrets
+                      key: GCS_BUCKET
+          restartPolicy: OnFailure
