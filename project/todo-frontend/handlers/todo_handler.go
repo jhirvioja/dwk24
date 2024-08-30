@@ -1,14 +1,16 @@
 package handlers
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
-	"path/filepath"
 
 	"github.com/jhirvioja/dwk24/project/todo-frontend/services"
 )
+
+var templatesFS embed.FS
 
 func TodoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
@@ -26,9 +28,7 @@ func TodoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	todoTemplatePath := filepath.Join("templates", "todo.tmpl")
-
-	t, err := template.ParseFiles(todoTemplatePath)
+	t, err := template.ParseFS(templatesFS, "templates/todo.tmpl")
 	if err != nil {
 		fmt.Printf("Failed to parse template file: %v\n", err)
 		http.Error(w, "Failed to parse template file", http.StatusInternalServerError)
