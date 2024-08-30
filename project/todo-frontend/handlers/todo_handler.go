@@ -10,6 +10,7 @@ import (
 	"github.com/jhirvioja/dwk24/project/todo-frontend/services"
 )
 
+//go:embed templates/todo.tmpl
 var templatesFS embed.FS
 
 func TodoHandler(w http.ResponseWriter, r *http.Request) {
