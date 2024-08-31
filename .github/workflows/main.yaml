@@ -78,6 +78,7 @@ jobs:
             --from-literal=DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             --from-literal=DB_DATABASE=${{ secrets.DB_DATABASE }} \
             --from-literal=GCS_BUCKET=${{ secrets.GCS_BUCKET }} \
+            --from-literal=PGHOST=${{ secrets.PGHOST }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Deploy

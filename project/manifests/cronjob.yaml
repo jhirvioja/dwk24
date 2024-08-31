@@ -39,9 +39,10 @@ spec:
     spec:
       template:
         spec:
+          serviceAccountName: dwk-gke-sa
           containers:
             - name: postgres-backup
-              image: jhirvioja/pgdump-to-storage:0.0.1
+              image: jhirvioja/pgdump-to-storage:0.0.4
               env:
                 - name: DB_USERNAME
                   valueFrom:
@@ -63,4 +64,9 @@ spec:
                     secretKeyRef:
                       name: todo-secrets
                       key: GCS_BUCKET
+                - name: PGHOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: todo-secrets
+                      key: PGHOST
           restartPolicy: OnFailure
