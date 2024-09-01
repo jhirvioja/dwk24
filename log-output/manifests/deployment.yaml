@@ -22,6 +22,10 @@ spec:
       containers:
         - name: log-outputter
           image: jhirvioja/log-outputter:0.0.9
+          resources:
+            limits:
+              cpu: "100m"
+              memory: "86Mi"
           env:
             - name: MESSAGE
               valueFrom:

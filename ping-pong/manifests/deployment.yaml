@@ -18,6 +18,10 @@ spec:
       containers:
         - name: ping-pong
           image: jhirvioja/ping-pong:0.0.10
+          resources:
+            limits:
+              cpu: "100m"
+              memory: "86Mi"
           env:
             - name: DB_USERNAME
               valueFrom:
