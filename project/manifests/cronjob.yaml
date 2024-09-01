@@ -11,6 +11,10 @@ spec:
           containers:
             - name: project-cronjob
               image: jhirvioja/project-reminder:0.0.2
+              resources:
+                limits:
+                  cpu: "250m"
+                  memory: "128Mi"
               env:
                 - name: DB_USERNAME
                   valueFrom:
@@ -43,6 +47,10 @@ spec:
           containers:
             - name: postgres-backup
               image: jhirvioja/pgdump-to-storage:0.0.4
+              resources:
+                limits:
+                  cpu: "500m"
+                  memory: "256Mi"
               env:
                 - name: DB_USERNAME
                   valueFrom:

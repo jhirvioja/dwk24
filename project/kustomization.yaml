@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - manifests/cronjob.yaml
   - manifests/deployment.yaml
+  - manifests/horizontalpodautoscaler.yaml
   - manifests/ingress.yaml
   - manifests/persistentvolumeclaim.yaml
   - manifests/services.yaml
