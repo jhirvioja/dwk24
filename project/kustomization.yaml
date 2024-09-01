@@ -12,4 +12,4 @@ images:
   - name: PROJECT/FE-IMAGE
     newName: jhirvioja/project-todo-frontend:0.0.8
   - name: PROJECT/BE-IMAGE
-    newName: jhirvioja/project-todo-backend:0.0.7
+    newName: jhirvioja/project-todo-backend:0.0.9

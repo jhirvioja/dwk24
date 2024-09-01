@@ -3,7 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
+	"fmt"
 	"net/http"
 )
 
@@ -22,11 +22,11 @@ func CreateTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			return
 		}
 
-		log.Printf("Received todo: %s", newTodo.Todo)
+		fmt.Println("Received todo:", newTodo.Todo)
 
 		if len(newTodo.Todo) > maxTodoLength {
 			http.Error(w, "Todo exceeds 140 characters", http.StatusBadRequest)
-			log.Printf("Todo exceeds 140 characters: %s", newTodo.Todo)
+			fmt.Println("Todo exceeds 140 characters:", newTodo.Todo)
 			return
 		}
 
@@ -41,7 +41,7 @@ func CreateTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		}
 
-		log.Printf("Todo created succesfully: %s", newTodo.Todo)
+		fmt.Println("Todo created succesfully:", newTodo.Todo)
 		return
 	}
 
