@@ -47,10 +47,6 @@ spec:
           containers:
             - name: postgres-backup
               image: jhirvioja/pgdump-to-storage:0.0.4
-              resources:
-                limits:
-                  cpu: "1"
-                  memory: "256Mi"
               env:
                 - name: DB_USERNAME
                   valueFrom:
