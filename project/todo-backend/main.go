@@ -66,11 +66,24 @@ func main() {
 		handlers.CreateTodoHandler(w, r, db)
 	})
 
+	http.HandleFunc("/healthz", healthCheckHandler)
+
 	fmt.Printf("Server started on port %s\n", port)
 
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		fmt.Println("Server error:", err)
 	}
+}
+
+func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	err := db.Ping()
+	if err != nil {
+		http.Error(w, "Database connection failed", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
 }
 
 func createConnectionString(username, password, database string) (string, error) {

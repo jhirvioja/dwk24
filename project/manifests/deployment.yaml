@@ -32,6 +32,12 @@ spec:
               mountPath: /usr/src/app/files
         - name: project-todo-backend
           image: PROJECT/BE-IMAGE
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 3001
           resources:
             limits:
               cpu: "125m"
