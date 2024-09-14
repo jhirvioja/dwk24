@@ -59,6 +59,7 @@ func main() {
 	fmt.Printf("Server started in port %s\n", port)
 
 	http.HandleFunc("/", pongHandler)
+	http.HandleFunc("/healthz", healthCheckHandler)
 
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		fmt.Println("Server error:", err)
@@ -83,6 +84,17 @@ func pongHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to update counter in database", http.StatusInternalServerError)
 		return
 	}
+}
+
+func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	err := db.Ping()
+	if err != nil {
+		http.Error(w, "Database connection failed", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
 }
 
 func createConnectionString(username, password, database string) (string, error) {

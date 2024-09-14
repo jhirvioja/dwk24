@@ -4,6 +4,7 @@ metadata:
   name: dwk-ingress
   namespace: log-output
 spec:
+  ingressClassName: nginx
   rules:
     - http:
         paths:

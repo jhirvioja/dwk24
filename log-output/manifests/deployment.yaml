@@ -15,13 +15,15 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
-      # volumes:
-      #   - name: shared-log-output
-      #     persistentVolumeClaim:
-      #       claimName: dwk-pv-claim
       containers:
         - name: log-outputter
-          image: jhirvioja/log-outputter:0.0.9
+          image: jhirvioja/log-outputter:0.0.10
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 3000
           resources:
             limits:
               cpu: "100m"
@@ -36,9 +38,6 @@ spec:
             - name: config-volume
               mountPath: /etc/config
               readOnly: true
-          # volumeMounts:
-          #   - name: shared-log-output
-          #     mountPath: /usr/src/app/files
       volumes:
         - name: config-volume
           configMap:
@@ -46,8 +45,3 @@ spec:
             items:
               - key: information.txt
                 path: information.txt
-        # - name: log-generator
-        #   image: jhirvioja/log-generator:0.0.5
-        # volumeMounts:
-        #   - name: shared-log-output
-        #     mountPath: /usr/src/app/files

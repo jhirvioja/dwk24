@@ -54,6 +54,23 @@ func main() {
 		fmt.Fprintf(w, "%s: %s.\nPing / Pongs: %s\n", string(timestamp), randomString, string(counter))
 	})
 
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		resp, err := http.Get("http://ping-pong-svc:80/healthz")
+		if err != nil || resp.StatusCode != http.StatusOK {
+			fmt.Printf("Health check failed: %v\n", err)
+			http.Error(w, "Service is not ready", http.StatusInternalServerError)
+			return
+		}
+		defer resp.Body.Close()
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		fmt.Println("Server error:", err)
+	}
+
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		fmt.Println("Server error:", err)
 	}
