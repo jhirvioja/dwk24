@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: cpu-usage-monitor
+spec:
+  metrics:
+    - name: cpu-usage-rate
+      initialDelay: 2m
+      interval: 1m
+      count: 10
+      successCondition: result < 80
+      failureCondition: result >= 80
+      provider:
+        prometheus:
+          address: http://kube-prometheus-stack-1726-prometheus.prometheus.svc.cluster.local:9090
+          query: |
+            sum(rate(container_cpu_usage_seconds_total{namespace="default"}[1m])) by (default)

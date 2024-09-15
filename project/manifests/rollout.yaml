@@ -1,0 +1,76 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project
+  strategy:
+    canary:
+      steps:
+        - setWeight: 25
+        - pause:
+            duration: 30s
+        - setWeight: 50
+        - analysis:
+            templates:
+              - templateName: cpu-usage-monitor
+        - pause:
+            duration: 30s
+  template:
+    metadata:
+      labels:
+        app: project
+    spec:
+      securityContext:
+        fsGroup: 1000
+      volumes:
+        - name: shared-log-output
+          persistentVolumeClaim:
+            claimName: dwk-pv-claim
+      containers:
+        - name: project
+          image: PROJECT/FE-IMAGE
+          resources:
+            limits:
+              cpu: "125m"
+              memory: "128Mi"
+          volumeMounts:
+            - name: shared-log-output
+              mountPath: /usr/src/app/files
+        - name: project-todo-backend
+          image: PROJECT/BE-IMAGE
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 3001
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 3001
+          resources:
+            limits:
+              cpu: "125m"
+              memory: "128Mi"
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: todo-secrets
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todo-secrets
+                  key: DB_PASSWORD
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: todo-secrets
+                  key: DB_DATABASE
