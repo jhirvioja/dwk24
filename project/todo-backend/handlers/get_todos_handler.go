@@ -8,7 +8,7 @@ import (
 
 func GetTodosHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if r.Method == http.MethodGet {
-		rows, err := db.Query("SELECT id, todo FROM todos")
+		rows, err := db.Query("SELECT id, todo, done FROM todos")
 		if err != nil {
 			http.Error(w, "Failed to retrieve todos from database", http.StatusInternalServerError)
 			return
@@ -18,7 +18,7 @@ func GetTodosHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		var todos []Todo
 		for rows.Next() {
 			var todo Todo
-			if err := rows.Scan(&todo.ID, &todo.Todo); err != nil {
+			if err := rows.Scan(&todo.ID, &todo.Todo, &todo.Done); err != nil {
 				http.Error(w, "Failed to scan todo", http.StatusInternalServerError)
 				return
 			}

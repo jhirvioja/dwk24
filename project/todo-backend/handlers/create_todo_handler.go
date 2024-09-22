@@ -10,6 +10,7 @@ import (
 type Todo struct {
 	ID   int    `json:"id"`
 	Todo string `json:"todo"`
+	Done bool   `json:"done"`
 }
 
 const maxTodoLength = 140

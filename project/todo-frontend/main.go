@@ -72,6 +72,8 @@ func main() {
 
 	http.HandleFunc("/add_todo", handlers.AddTodoHandler)
 
+	http.HandleFunc("/update_todo", handlers.UpdateTodoHandler)
+
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		fmt.Println("Server error:", err)
 	}

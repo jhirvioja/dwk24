@@ -41,6 +41,22 @@
                 })
                 .catch(error => console.error('Error:', error));
               }
+            },
+            markAsDone(todoId, todoContent) {
+              if (confirm('Haluatko varmasti merkitä todon tehdyksi? Toimintoa ei voi peruttaa.')) {
+                fetch('/update_todo', {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ id: todoId, todo: todoContent, done: true }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                  this.todos = data;
+                })
+                .catch(error => console.error('Error:', error));
+              }
             }
           }"
           class="flex flex-col p-4 border-2 rounded-lg max-w-96"
@@ -61,7 +77,16 @@
           </div>
           <ul class="mt-2 pl-8 list-disc">
             <template x-for="todo in todos" :key="todo.id">
-              <li class="break-words" x-text="todo.todo"></li>
+              <li class="flex items-center justify-between break-words">
+                <span x-text="todo.todo"></span>
+                <input
+                  type="checkbox"
+                  class="ml-4"
+                  :disabled="todo.done"
+                  @change="markAsDone(todo.id, todo.todo)"
+                  :checked="todo.done"
+                />
+              </li>
             </template>
           </ul>
         </div>

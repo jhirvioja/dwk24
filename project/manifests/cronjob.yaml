@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
             - name: project-cronjob
-              image: jhirvioja/project-reminder:0.0.2
+              image: jhirvioja/project-reminder:0.0.4
               resources:
                 limits:
                   cpu: "250m"

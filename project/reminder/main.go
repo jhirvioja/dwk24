@@ -13,6 +13,7 @@ import (
 type Todo struct {
 	ID   int    `json:"id"`
 	Todo string `json:"todo"`
+	Done bool   `json:"done"`
 }
 
 var db *sql.DB
@@ -51,7 +52,8 @@ func main() {
 	_, err = db.Exec(`
 	Create TABLE IF NOT exists todos (
 			id SERIAL PRIMARY KEY,
-			todo TEXT NOT NULL
+			todo TEXT NOT NULL,
+			done BOOLEAN DEFAULT FALSE
 	);
   `)
 	if err != nil {

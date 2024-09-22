@@ -14,6 +14,7 @@ import (
 type Todo struct {
 	ID   int    `json:"id"`
 	Todo string `json:"todo"`
+	Done bool   `json:"done"`
 }
 
 var db *sql.DB
@@ -52,7 +53,8 @@ func main() {
 	_, err = db.Exec(`
 	Create TABLE IF NOT exists todos (
 			id SERIAL PRIMARY KEY,
-			todo TEXT NOT NULL
+			todo TEXT NOT NULL,
+			done BOOLEAN DEFAULT FALSE
 	);
   `)
 	if err != nil {
@@ -62,8 +64,13 @@ func main() {
 	http.HandleFunc("/todos", func(w http.ResponseWriter, r *http.Request) {
 		handlers.GetTodosHandler(w, r, db)
 	})
+
 	http.HandleFunc("/todos/create", func(w http.ResponseWriter, r *http.Request) {
 		handlers.CreateTodoHandler(w, r, db)
+	})
+
+	http.HandleFunc("/todos/update", func(w http.ResponseWriter, r *http.Request) {
+		handlers.UpdateTodoHandler(w, r, db)
 	})
 
 	http.HandleFunc("/healthz", healthCheckHandler)
